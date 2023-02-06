@@ -1,4 +1,5 @@
 import { Database } from 'arangojs';
+import apm from 'elastic-apm-node';
 import * as fs from 'fs';
 import { Data } from 'node-cache';
 import { configuration } from '../config';
@@ -45,27 +46,31 @@ export class ArangoDBService {
   }
 
   async query(query: string, client: Database): Promise<unknown> {
+    const span = apm.startSpan(`Query in ${client.name}`)
     try {
       const cycles = await client.query(query);
-
       const results = await cycles.batches.all();
 
+      span?.end()
       LoggerService.log(`Query result: ${JSON.stringify(results)}`);
 
       return results;
     } catch (error) {
       LoggerService.error('Error while executing query from arango with message:', error as Error, 'ArangoDBService');
+      throw new Error(`Error while executing query from arango with message: ${error as Error}`)
     }
   }
 
   async save(client: Database, collectionName: string, data: any, saveOptions?: any): Promise<void> {
+    const span = apm.startSpan(`Save ${collectionName} Document in ${client.name}`);
     try {
       await client.collection(collectionName).save(data, saveOptions || undefined);
+      span?.end()
     } catch (error) {
-      LoggerService.error(`Error while saving data to collection: ${collectionName} with document:\n ${JSON.stringify(data)}`);
+      LoggerService.error(`Error while saving data to collection ${collectionName} with document\n ${JSON.stringify(data)}`)
       if (saveOptions) LoggerService.error(`With save options: ${JSON.stringify(saveOptions)}`)
       LoggerService.error(JSON.stringify(error))
-      throw error;
+      throw new Error(`Error while saving data to collection ${collectionName}`)
     }
   }
 

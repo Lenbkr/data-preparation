@@ -1,4 +1,5 @@
 import axios from 'axios';
+import apm from 'elastic-apm-node';
 import { databaseClient } from '.';
 import { Pacs002 } from './classes/pacs.002.001.12';
 import { Pacs008 } from './classes/pacs.008.001.10';
@@ -10,6 +11,8 @@ import { LoggerService } from './logger.service';
 import { calcCreditorHash, calcDebtorHash } from './utils/transaction-tools';
 
 export const handlePain001 = async (transaction: Pain001): Promise<any> => {
+  LoggerService.log('Start - Handle transaction data'); 
+  const span = apm.startSpan('Handle transaction data');
   const creditorHash = calcCreditorHash(transaction);
   const debtorHash = calcDebtorHash(transaction);
 
@@ -75,7 +78,6 @@ export const handlePain001 = async (transaction: Pain001): Promise<any> => {
   transaction.CstmrCdtTrfInitn.PmtInf.DbtrAcct.Id.Othr.SchmeNm.Prtry = 'PSEUDO';
 
   try {
-    LoggerService.log('Insert Transaction History');
     await databaseClient.saveTransactionHistory(transaction);
     await databaseClient.addAccount(debtorHash);
     await databaseClient.addAccount(creditorHash);
@@ -84,7 +86,6 @@ export const handlePain001 = async (transaction: Pain001): Promise<any> => {
     await databaseClient.addEntity(debtorId, CreDtTm);
     await databaseClient.addAccountHolder(debtorId, debtorAcctId, CreDtTm);
     await databaseClient.saveTransactionRelationship(transactionRelationship);
-    LoggerService.log('Successfully Added Transaction History');
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
   }
@@ -93,10 +94,14 @@ export const handlePain001 = async (transaction: Pain001): Promise<any> => {
   await executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
+  span?.end()
+  LoggerService.log('END - Handle transaction data'); 
   return transaction;
 };
 
 export const handlePain013 = async (transaction: Pain013): Promise<any> => {
+  LoggerService.log('Start - Handle transaction data'); 
+  const span = apm.startSpan('Handle transaction data');
   const creditorHash = calcCreditorHash(transaction);
   const debtorHash = calcDebtorHash(transaction);
 
@@ -155,12 +160,10 @@ export const handlePain013 = async (transaction: Pain013): Promise<any> => {
   transaction._key = MsgId
 
   try {
-    LoggerService.log('Insert Transaction History');
     await databaseClient.saveTransactionHistory(transaction);
     await databaseClient.addAccount(debtorHash);
     await databaseClient.addAccount(creditorHash);
     await databaseClient.saveTransactionRelationship(transactionRelationship);
-    LoggerService.log('Successfully Added Transaction History');
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
   } 
@@ -169,10 +172,14 @@ export const handlePain013 = async (transaction: Pain013): Promise<any> => {
   await executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
+  span?.end()
+  LoggerService.log('END - Handle transaction data'); 
   return transaction;
 };
 
 export const handlePacs008 = async (transaction: Pacs008): Promise<any> => {
+  LoggerService.log('Start - Handle transaction data'); 
+  const span = apm.startSpan('Handle transaction data');
   const creditorHash = calcCreditorHash(transaction);
   const debtorHash = calcDebtorHash(transaction);
 
@@ -230,12 +237,10 @@ export const handlePacs008 = async (transaction: Pacs008): Promise<any> => {
   transaction.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Id.PrvtId.Othr.SchmeNm.Prtry = "PSEUDO"
 
   try {
-    LoggerService.log('Insert Transaction History');
     await databaseClient.saveTransactionHistory(transaction);
     await databaseClient.addAccount(debtorHash);
     await databaseClient.addAccount(creditorHash);
     await databaseClient.saveTransactionRelationship(transactionRelationship);
-    LoggerService.log('Successfully Added Transaction History');    
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
   }
@@ -248,6 +253,8 @@ export const handlePacs008 = async (transaction: Pacs008): Promise<any> => {
 };
 
 export const handlePacs002 = async (transaction: Pacs002): Promise<any> => {
+  LoggerService.log('Start - Handle transaction data'); 
+  const span = apm.startSpan('Handle transaction data');
   const CreDtTm = transaction.FIToFIPmtSts.GrpHdr.CreDtTm
   const EndToEndId = transaction.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId
   const MsgId = transaction.FIToFIPmtSts.GrpHdr.MsgId
@@ -269,7 +276,6 @@ export const handlePacs002 = async (transaction: Pacs002): Promise<any> => {
   transaction._key = MsgId
 
   try {
-    LoggerService.log('Insert Transaction History');
     await databaseClient.saveTransactionHistory(transaction);
 
     let result = await databaseClient.getTransactionHistory(EndToEndId)
@@ -279,7 +285,6 @@ export const handlePacs002 = async (transaction: Pacs002): Promise<any> => {
     transactionRelationship.to = `accounts/${dtrPseudo}`
 
     await databaseClient.saveTransactionRelationship(transactionRelationship);
-    LoggerService.log('Successfully Added Transaction History');
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
   }
@@ -288,19 +293,22 @@ export const handlePacs002 = async (transaction: Pacs002): Promise<any> => {
   await executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
+  span?.end()
+  LoggerService.log('END - Handle transaction data'); 
   return transaction;
 };
 // Submit the transaction to CRSP
 const executePost = async (endpoint: string, request: any) => {
+  const span = apm.startSpan(`POST ${endpoint}`);
   try {
     const crspRes = await axios.post(endpoint, request);
 
     if (crspRes.status !== 200) {
       LoggerService.error(`CRSP Response StatusCode != 200, request:\r\n${request}`);
     }
+    span?.end();
   } catch (error) {
     LoggerService.error(`Error while sending request to CRSP at ${endpoint ?? ''} with message: ${error}`);
     LoggerService.trace(`CRSP Error Request:\r\n${JSON.stringify(request)}`);
-    throw error
   }
 };
