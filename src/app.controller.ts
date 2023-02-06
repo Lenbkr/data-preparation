@@ -9,7 +9,7 @@ import { handlePacs002, handlePacs008, handlePain001, handlePain013 } from './lo
 
 export const handleExecute = async (ctx: Context, next: Next): Promise<Context | undefined> => {
   LoggerService.log('Start - Handle execute request');
-  const span = apm.startSpan('Handle execute request');
+  const tx = apm.startTransaction('Handle execute request', 'Pain001.001.11');
   try {
     const request = ctx.request.body as Pain001;
     const result = await handlePain001(request);
@@ -18,7 +18,7 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
     ctx.body = result;
 
     await next();
-    span?.end();
+    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -30,7 +30,7 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
 
 export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Context | undefined> => {
   LoggerService.log('Start - Handle quote reply request');
-  const span = apm.startSpan('Handle quote reply request');
+  const tx = apm.startTransaction('Handle quote reply request', , 'Pain013.001.09');
   try {
     const request = ctx.request.body as Pain013;
     const result = await handlePain013(request);
@@ -39,7 +39,7 @@ export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Contex
     ctx.body = result;
 
     await next();
-    span?.end();
+    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -51,7 +51,7 @@ export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Contex
 
 export const handleTransfer = async (ctx: Context, next: Next): Promise<Context | undefined> => {
   LoggerService.log('Start - Handle transfer request');
-  const span = apm.startSpan('Handle transfer request');
+  const tx = apm.startTransaction('Handle transfer request', 'Pacs008.001.10');
   try {
     const request = ctx.request.body as Pacs008;
     const result = await handlePacs008(request);
@@ -60,7 +60,7 @@ export const handleTransfer = async (ctx: Context, next: Next): Promise<Context 
     ctx.body = result;
 
     await next();
-    span?.end();
+    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -72,7 +72,7 @@ export const handleTransfer = async (ctx: Context, next: Next): Promise<Context 
 
 export const handleTransferResponse = async (ctx: Context, next: Next): Promise<Context | undefined> => {
   LoggerService.log('Start - Handle transfer response request');
-  const span = apm.startSpan('Handle transfer response request');
+  const tx = apm.startTransaction('Handle transfer response request', 'Pacs002.001.12');
   try {
     const request = ctx.request.body as Pacs002;
     const result = await handlePacs002(request);
@@ -81,7 +81,7 @@ export const handleTransferResponse = async (ctx: Context, next: Next): Promise<
     ctx.body = result;
 
     await next();
-    span?.end();
+    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
