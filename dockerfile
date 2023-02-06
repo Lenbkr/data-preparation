@@ -48,6 +48,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV CRSP_ENDPOINT=http://gateway.openfaas:8080/function/off-channel-router-setup-processor-rel-1-0-0.openfaas-fn/execute
 ENV CACHE_TTL=30
+ENV CERT_PATH=
 
 ENV REDIS_DB=0
 ENV REDIS_AUTH=
