@@ -290,7 +290,7 @@ export const handlePacs002 = async (transaction: Pacs002): Promise<any> => {
   }
 
   //Notify CRSP
-  await executePost(configuration.crspEndpoint, transaction);
+  executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
   span?.end()
@@ -306,6 +306,7 @@ const executePost = async (endpoint: string, request: any) => {
     if (crspRes.status !== 200) {
       LoggerService.error(`CRSP Response StatusCode != 200, request:\r\n${request}`);
     }
+    LoggerService.log(`CRSP Reponse - ${crspRes.status} with data\n ${JSON.stringify(crspRes.data)}`)
     span?.end();
   } catch (error) {
     LoggerService.error(`Error while sending request to CRSP at ${endpoint ?? ''} with message: ${error}`);
