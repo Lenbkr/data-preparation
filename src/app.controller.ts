@@ -30,7 +30,7 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
 
 export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Context | undefined> => {
   LoggerService.log('Start - Handle quote reply request');
-  const tx = apm.startTransaction('Handle quote reply request', , 'Pain013.001.09');
+  const tx = apm.startTransaction('Handle quote reply request', 'Pain013.001.09');
   try {
     const request = ctx.request.body as Pain013;
     const result = await handlePain013(request);
