@@ -77,7 +77,7 @@ export class ArangoDBService {
   async getPseudonyms(hash: string): Promise<any> {
     const db = this.pseudonymsClient.collection(configuration.db.pseudonymscollection)
     const query = aql`FOR i IN ${db}
-        FILTER i.pseudonym == "${hash}"
+        FILTER i.pseudonym == ${hash}
         RETURN i`;
 
     return this.query(query, this.pseudonymsClient);
@@ -86,7 +86,7 @@ export class ArangoDBService {
   async getTransactionHistory(EndToEndId: string): Promise<any> {
     const db = this.transactionHistoryClient.collection('transactionHistory')
     const query = aql`FOR doc IN ${db} 
-      FILTER doc.FIToFICstmrCdt.CdtTrfTxInf.PmtId.EndToEndId == '${EndToEndId}' 
+      FILTER doc.FIToFICstmrCdt.CdtTrfTxInf.PmtId.EndToEndId == ${EndToEndId} 
       RETURN doc`;
 
     return this.query(query, this.transactionHistoryClient);
