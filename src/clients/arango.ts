@@ -12,7 +12,7 @@ export class ArangoDBService {
 
   constructor() {
     const caOption = fs.existsSync(configuration.cert) ? [fs.readFileSync(configuration.cert)] : [];
-    if (caOption.length === 0) LoggerService.warn('🟠 ArangoDB was not supplied with a certificate')
+    if (caOption.length === 0) LoggerService.warn('🟠 ArangoDB was not supplied with a certificate');
     this.pseudonymsClient = new Database({
       url: configuration.db.url,
       databaseName: configuration.db.pseudonymsdb,
@@ -46,18 +46,18 @@ export class ArangoDBService {
   }
 
   async query(query: string, client: Database): Promise<unknown> {
-    const span = apm.startSpan(`Query in ${client.name}`)
+    const span = apm.startSpan(`Query in ${client.name}`);
     try {
       const cycles = await client.query(query);
       const results = await cycles.batches.all();
 
-      span?.end()
+      span?.end();
       LoggerService.log(`Query result: ${JSON.stringify(results)}`);
 
       return results;
     } catch (error) {
       LoggerService.error('Error while executing query from arango with message:', error as Error, 'ArangoDBService');
-      throw new Error(`Error while executing query from arango with message: ${error as Error}`)
+      throw new Error(`Error while executing query from arango with message: ${error as Error}`);
     }
   }
 
@@ -65,12 +65,12 @@ export class ArangoDBService {
     const span = apm.startSpan(`Save ${collectionName} Document in ${client.name}`);
     try {
       await client.collection(collectionName).save(data, saveOptions || undefined);
-      span?.end()
+      span?.end();
     } catch (error) {
-      LoggerService.error(`Error while saving data to collection ${collectionName} with document\n ${JSON.stringify(data)}`)
-      if (saveOptions) LoggerService.error(`With save options: ${JSON.stringify(saveOptions)}`)
-      LoggerService.error(JSON.stringify(error))
-      throw new Error(`Error while saving data to collection ${collectionName}`)
+      LoggerService.error(`Error while saving data to collection ${collectionName} with document\n ${JSON.stringify(data)}`);
+      if (saveOptions) LoggerService.error(`With save options: ${JSON.stringify(saveOptions)}`);
+      LoggerService.error(JSON.stringify(error));
+      throw new Error(`Error while saving data to collection ${collectionName}`);
     }
   }
 
@@ -91,46 +91,67 @@ export class ArangoDBService {
   }
 
   async addAccount(hash: string): Promise<any> {
-    return this.save(this.pseudonymsClient, 'accounts', {_key: hash }, { overwriteMode: 'ignore'})
+    return this.save(this.pseudonymsClient, 'accounts', { _key: hash }, { overwriteMode: 'ignore' });
   }
 
   async addEntity(entityId: string, CreDtTm: string): Promise<any> {
-    return this.save(this.pseudonymsClient, 'entities', {
-      _key: entityId, 
-      Id: entityId, 
-      CreDtTm: CreDtTm
-    }, { overwriteMode: 'ignore' })
+    return this.save(
+      this.pseudonymsClient,
+      'entities',
+      {
+        _key: entityId,
+        Id: entityId,
+        CreDtTm: CreDtTm,
+      },
+      { waitForSync: true, overwriteMode: 'ignore' },
+    );
   }
 
   async addAccountHolder(entityId: string, accountId: string, CreDtTm: string): Promise<any> {
-    return this.save(this.pseudonymsClient, 'account_holder', {
-      _from: `entities/${entityId}`, 
-      _to: `accounts/${accountId}`, 
-      CreDtTm: CreDtTm,
-    }, { overwriteMode: 'ignore' })
+    return this.save(
+      this.pseudonymsClient,
+      'account_holder',
+      {
+        _from: `entities/${entityId}`,
+        _to: `accounts/${accountId}`,
+        CreDtTm: CreDtTm,
+      },
+      { waitForSync: true, overwriteMode: 'ignore' },
+    );
   }
 
   async saveTransactionRelationship(tR: TransactionRelationship): Promise<any> {
-    return this.save(this.pseudonymsClient, 'transactionRelationship', {
-      _key: tR.MsgId,
-      _from: tR.from,
-      _to: tR.to,
-      TxTp: tR.TxTp,
-      CreDtTm: tR.CreDtTm,
-      Amt: tR.Amt,
-      Ccy: tR.Ccy,
-      PmtInfId: tR.PmtInfId,
-      EndToEndId: tR.EndToEndId,
-      lat: tR.lat,
-      long: tR.long,
-    }, { overwriteMode: 'ignore' });
+    return this.save(
+      this.pseudonymsClient,
+      'transactionRelationship',
+      {
+        _key: tR.MsgId,
+        _from: tR.from,
+        _to: tR.to,
+        TxTp: tR.TxTp,
+        CreDtTm: tR.CreDtTm,
+        Amt: tR.Amt,
+        Ccy: tR.Ccy,
+        PmtInfId: tR.PmtInfId,
+        EndToEndId: tR.EndToEndId,
+        lat: tR.lat,
+        long: tR.long,
+      },
+      { waitForSync: true, overwriteMode: 'ignore' },
+    );
   }
 
-  async saveTransactionHistory(transaction: any): Promise<any> {    
-    return this.save(this.transactionHistoryClient, configuration.db.transactionhistorycollection, transaction, { overwriteMode: 'ignore' });
+  async saveTransactionHistory(transaction: any): Promise<any> {
+    return this.save(this.transactionHistoryClient, configuration.db.transactionhistorycollection, transaction, {
+      waitForSync: true,
+      overwriteMode: 'ignore',
+    });
   }
 
   async savePseudonym(pseudonym: any): Promise<any> {
-    return this.save(this.pseudonymsClient, configuration.db.pseudonymscollection, pseudonym, { overwriteMode: 'ignore' });
+    return this.save(this.pseudonymsClient, configuration.db.pseudonymscollection, pseudonym, {
+      waitForSync: true,
+      overwriteMode: 'ignore',
+    });
   }
 }
