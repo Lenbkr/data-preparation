@@ -1,7 +1,7 @@
-import { Database } from 'arangojs';
+import { aql, Database } from 'arangojs';
+import { AqlQuery } from 'arangojs/aql';
 import apm from 'elastic-apm-node';
 import * as fs from 'fs';
-import { Data } from 'node-cache';
 import { configuration } from '../config';
 import { TransactionRelationship } from '../interfaces/iTransactionRelationship';
 import { LoggerService } from '../logger.service';
@@ -45,7 +45,7 @@ export class ArangoDBService {
     }
   }
 
-  async query(query: string, client: Database): Promise<unknown> {
+  async query(query: AqlQuery, client: Database): Promise<unknown> {
     const span = apm.startSpan(`Query in ${client.name}`);
     try {
       const cycles = await client.query(query);
@@ -62,7 +62,7 @@ export class ArangoDBService {
   }
 
   async save(client: Database, collectionName: string, data: any, saveOptions?: any): Promise<void> {
-    const span = apm.startSpan(`Save ${collectionName} Document in ${client.name}`);
+    const span = apm.startSpan(`Save ${collectionName} document in ${client.name}`);
     try {
       await client.collection(collectionName).save(data, saveOptions || undefined);
       span?.end();
@@ -75,7 +75,7 @@ export class ArangoDBService {
   }
 
   async getPseudonyms(hash: string): Promise<any> {
-    const query = `FOR i IN ${configuration.db.pseudonymscollection}
+    const query = aql`FOR i IN ${configuration.db.pseudonymscollection}
         FILTER i.pseudonym == "${hash}"
         RETURN i`;
 
@@ -83,7 +83,7 @@ export class ArangoDBService {
   }
 
   async getTransactionHistory(EndToEndId: string): Promise<any> {
-    const query = `FOR doc IN transactionHistory 
+    const query = aql`FOR doc IN transactionHistory 
       FILTER doc.FIToFICstmrCdt.CdtTrfTxInf.PmtId.EndToEndId == '${EndToEndId}' 
       RETURN doc`;
 
