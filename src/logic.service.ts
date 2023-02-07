@@ -91,7 +91,7 @@ export const handlePain001 = async (transaction: Pain001): Promise<any> => {
   }
 
   //Notify CRSP
-  await executePost(configuration.crspEndpoint, transaction);
+  executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
   span?.end()
@@ -169,7 +169,7 @@ export const handlePain013 = async (transaction: Pain013): Promise<any> => {
   } 
 
   //Notify CRSP
-  await executePost(configuration.crspEndpoint, transaction);
+  executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
   span?.end()
@@ -246,7 +246,7 @@ export const handlePacs008 = async (transaction: Pacs008): Promise<any> => {
   }
 
   //Notify CRSP
-  await executePost(configuration.crspEndpoint, transaction);
+  executePost(configuration.crspEndpoint, transaction);
   LoggerService.log('Transaction send to CRSP service');
 
   return transaction;
