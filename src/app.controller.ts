@@ -23,6 +23,10 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
     LoggerService.error(failMessage, err as Error, 'ApplicationService');
+
+    ctx.status = 500;
+    ctx.body = failMessage
+    return ctx;
   } finally {
     LoggerService.log('End - Handle execute request');
   }
@@ -44,6 +48,10 @@ export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Contex
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
     LoggerService.error(failMessage, err as Error, 'ApplicationService');
+
+    ctx.status = 500;
+    ctx.body = failMessage
+    return ctx;
   } finally {
     LoggerService.log('End - Handle quote reply request');
   }
@@ -65,6 +73,10 @@ export const handleTransfer = async (ctx: Context, next: Next): Promise<Context 
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
     LoggerService.error(failMessage, err as Error, 'ApplicationService');
+
+    ctx.status = 500;
+    ctx.body = failMessage
+    return ctx;
   } finally {
     LoggerService.log('End - Handle transfer request');
   }
@@ -86,6 +98,10 @@ export const handleTransferResponse = async (ctx: Context, next: Next): Promise<
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
     LoggerService.error(failMessage, err as Error, 'ApplicationService');
+
+    ctx.status = 500;
+    ctx.body = failMessage
+    return ctx;
   } finally {
     LoggerService.log('End - Handle transfer response request');
   }
