@@ -18,7 +18,6 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
     ctx.body = result;
 
     await next();
-    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -26,9 +25,9 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
 
     ctx.status = 500;
     ctx.body = failMessage
-    tx?.end();
     return ctx;
   } finally {
+    tx?.end()
     LoggerService.log('End - Handle execute request');
   }
 };
@@ -44,7 +43,6 @@ export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Contex
     ctx.body = result;
 
     await next();
-    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -52,9 +50,9 @@ export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Contex
 
     ctx.status = 500;
     ctx.body = failMessage
-    tx?.end();
     return ctx;
   } finally {
+    tx?.end()
     LoggerService.log('End - Handle quote reply request');
   }
 };
@@ -70,7 +68,6 @@ export const handleTransfer = async (ctx: Context, next: Next): Promise<Context 
     ctx.body = result;
 
     await next();
-    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -78,9 +75,9 @@ export const handleTransfer = async (ctx: Context, next: Next): Promise<Context 
 
     ctx.status = 500;
     ctx.body = failMessage
-    tx?.end();
     return ctx;
   } finally {
+    tx?.end()
     LoggerService.log('End - Handle transfer request');
   }
 };
@@ -96,7 +93,6 @@ export const handleTransferResponse = async (ctx: Context, next: Next): Promise<
     ctx.body = result;
 
     await next();
-    tx?.end();
     return ctx;
   } catch (err) {
     const failMessage = 'Failed to process execution request.';
@@ -104,9 +100,9 @@ export const handleTransferResponse = async (ctx: Context, next: Next): Promise<
 
     ctx.status = 500;
     ctx.body = failMessage
-    tx?.end();
     return ctx;
   } finally {
+    tx?.end()
     LoggerService.log('End - Handle transfer response request');
   }
 };
