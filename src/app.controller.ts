@@ -7,7 +7,7 @@ import { Pain013 } from './classes/pain.013.001.09';
 import { LoggerService } from './logger.service';
 import { handlePacs002, handlePacs008, handlePain001, handlePain013 } from './logic.service';
 
-export const handleExecute = async (ctx: Context, next: Next): Promise<Context | undefined> => {
+export const handleExecute = async (ctx: Context, next: Next): Promise<Context> => {
   LoggerService.log('Start - Handle execute request');
   const tx = apm.startTransaction('Handle execute request', 'Pain001.001.11');
   try {
@@ -32,7 +32,7 @@ export const handleExecute = async (ctx: Context, next: Next): Promise<Context |
   }
 };
 
-export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Context | undefined> => {
+export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Context> => {
   LoggerService.log('Start - Handle quote reply request');
   const tx = apm.startTransaction('Handle quote reply request', 'Pain013.001.09');
   try {
@@ -57,7 +57,7 @@ export const handleQuoteReply = async (ctx: Context, next: Next): Promise<Contex
   }
 };
 
-export const handleTransfer = async (ctx: Context, next: Next): Promise<Context | undefined> => {
+export const handleTransfer = async (ctx: Context, next: Next): Promise<Context> => {
   LoggerService.log('Start - Handle transfer request');
   const tx = apm.startTransaction('Handle transfer request', 'Pacs008.001.10');
   try {
@@ -82,7 +82,7 @@ export const handleTransfer = async (ctx: Context, next: Next): Promise<Context 
   }
 };
 
-export const handleTransferResponse = async (ctx: Context, next: Next): Promise<Context | undefined> => {
+export const handleTransferResponse = async (ctx: Context, next: Next): Promise<Context> => {
   LoggerService.log('Start - Handle transfer response request');
   const tx = apm.startTransaction('Handle transfer response request', 'Pacs002.001.12');
   try {

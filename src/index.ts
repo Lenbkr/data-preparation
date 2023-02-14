@@ -1,10 +1,10 @@
-import App from './app';
-import { Context } from 'koa';
-import { configuration } from './config';
 import apm from 'elastic-apm-node';
-import { LoggerService } from './logger.service';
+import { Context } from 'koa';
 import NodeCache from 'node-cache';
+import App from './app';
 import { ArangoDBService, RedisService } from './clients';
+import { configuration } from './config';
+import { LoggerService } from './logger.service';
 
 /*
  * Initialize the APM Logging

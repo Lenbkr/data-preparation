@@ -90,6 +90,7 @@ export const handlePain001 = async (transaction: Pain001): Promise<any> => {
     await databaseClient.saveTransactionRelationship(transactionRelationship);
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
+    throw err;
   }
 
   //Notify CRSP
@@ -169,6 +170,7 @@ export const handlePain013 = async (transaction: Pain013): Promise<any> => {
     await databaseClient.saveTransactionRelationship(transactionRelationship);
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
+    throw err;
   } 
 
   //Notify CRSP
@@ -248,6 +250,7 @@ export const handlePacs008 = async (transaction: Pacs008): Promise<any> => {
     await databaseClient.saveTransactionRelationship(transactionRelationship);
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
+    throw err;
   }
 
   //Notify CRSP
@@ -292,6 +295,7 @@ export const handlePacs002 = async (transaction: Pacs002): Promise<any> => {
     await databaseClient.saveTransactionRelationship(transactionRelationship);
   } catch (err) {
     LoggerService.log(JSON.stringify(err));
+    throw err;
   }
 
   //Notify CRSP

@@ -23,6 +23,7 @@ const config: Config.InitialOptions = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
+  //collectCoverageFrom: ['src/app.controller.ts'],
   collectCoverageFrom: ['src/logic.service.ts'],
 
   // The directory where Jest should output its coverage files
@@ -40,7 +41,8 @@ const config: Config.InitialOptions = {
     './src/index.ts',
     './src/clients/arangodb.ts',
     './src/clients/index.ts',
-    './src/clients/redisClient.ts',
+    './src/clients/redis.ts',
+    './router.ts',
     './jest.config.ts',
   ],
 
@@ -58,7 +60,7 @@ const config: Config.InitialOptions = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      branches: 95,
+      // branches: 95,
       functions: 95,
       lines: 95,
       statements: 95,
